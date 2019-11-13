@@ -1,6 +1,6 @@
 <template>
     <el-container>
-    <el-header>
+    <el-header  style="display:none">
             <skucreatedig
                 ref="createSKUView"
                 v-bind:isCreate="isCreateSKU"
@@ -10,232 +10,250 @@
     </el-header>
     <el-main>
     <el-container>
-        <el-row>
-            <el-col>
+        <el-row class="centen-cla">
+            <el-col class="layout-cla">
                 <el-row>
-                    <el-col>
-                        基本信息
+                    <el-col class="title-cla">
+                        <span>基本信息</span>
                     </el-col>
+                        <el-col>
+                            <el-form label-width="130px" v-model="modifyModel" :inline="true">
+                            <el-form-item label="SPU编码">
+                                    <el-input v-model="modifyModel.SPU_code"></el-input>
+                                </el-form-item>
+                                <el-form-item label="产品名">
+                                    <el-input v-model="modifyModel.product_name"></el-input>
+                                </el-form-item>
+                                <el-form-item label="是否原创">
+                                    <el-select v-model="modifyModel.is_fake" placeholder="请选择">
+                                        <el-option
+                                            v-for="item in boolOption"
+                                            :key="item.value"
+                                            :label="item.label"
+                                            :value="item.value">
+                                        </el-option>
+                                    </el-select>
+                                </el-form-item>
+                                <el-form-item label="投放区域">
+                                    <el-input v-model="modifyModel.area"></el-input>
+                                </el-form-item>
+                                <el-form-item label="货源地址">
+                                    <el-input v-model="modifyModel.product_link"></el-input>
+                                </el-form-item>
+                                <el-form-item label="对标/视频链接">
+                                    <el-input v-model="modifyModel.video_link"></el-input>
+                                </el-form-item>
+                                <el-form-item label="创建时间">
+                                    <el-input v-model="modifyModel.create_time"></el-input>
+                                </el-form-item>
+                                <el-form-item label="状态">
+                                    <el-select v-model="modifyModel.apply_status" placeholder="请选择">
+                                        <el-option
+                                            v-for="item in statusOption"
+                                            :key="item.value"
+                                            :label="item.label"
+                                            :value="item.value">
+                                        </el-option>
+                                    </el-select>
+                                </el-form-item>
+                                <el-form-item label="产品图片">
+                                    <el-col>
+                                        <el-image :src="product_image" style="width: 185px; height: 185px" fit="contain"></el-image>
+                                        <input type="file" @change="displayImage" ref="imageInput">
+                                    </el-col>
+                                </el-form-item>
+                            </el-form>
+                        </el-col>
+                </el-row>
+            </el-col>
+            <el-col >
+                <el-row>
+                    <el-col  class="title-cla">
+                        <span>规格信息</span>
+                        <el-button type="primary" @click="addSKUAction() "  class="el-icon-plus"  size="small"></el-button>
+                    </el-col>
+                    <el-col>
+                        <el-table 
+                            :data="tableData"
+                            border
+                            style="width: 100%">
+                                <el-table-column
+                                    prop="specification"
+                                    label="产品颜色规格">
+                                </el-table-column>
+                                <el-table-column
+                                    label="图片">
+                                    <template slot-scope="scope">
+                                        <el-image :src="scope.row.image" style="width: 60px; height: 60px" fit="contain">
+                                            <div slot="error" class="image-slot">
+                                                <i class="el-icon-picture-outline"></i>
+                                            </div>
+                                        </el-image>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column
+                                    prop="buy_price"
+                                    label="采购价格(元)">
+                                </el-table-column>
+                                <el-table-column
+                                    prop="product_size"
+                                    label="包装尺寸(cm)">
+                                </el-table-column>
+                                <el-table-column
+                                    prop="weight"
+                                    label="包装重量(克)">
+                                </el-table-column>
+                                <el-table-column
+                                    prop="purchasing_cycle"
+                                    label="采购周期">
+                                </el-table-column>
+                                <el-table-column
+                                    prop="sensitive_information"
+                                    label="敏感信息">
+                                </el-table-column>
+                                <el-table-column
+                                    label="操作"
+                                    width="100px">
+                                    <template slot-scope="scope">
+                                        <el-button
+                                            @click.native.prevent="modifySKURoleWithRow(scope.$index, tableData)"
+                                            type="text"
+                                            size="small">
+                                                修改
+                                        </el-button>
+                                        <el-button
+                                            @click.native.prevent="deleteSKURoleWithRow(scope.$index, tableData)"
+                                            type="text"
+                                            size="small">
+                                                移除
+                                        </el-button>
+                                    </template>
+                                </el-table-column>
+                            </el-table>
+                        </el-col>
+                    </el-row>
+            </el-col>
+            <el-col class="layout-cla">
+                <el-row>
+                    <el-col  class="title-cla">
+                    <span>采购信息</span>
+                    </el-col>
+                    <el-col>
                         <el-form label-width="130px" v-model="modifyModel" :inline="true">
-                           <el-form-item label="SPU编码">
-                                <el-input v-model="modifyModel.SPU_code"></el-input>
-                            </el-form-item>
-                            <el-form-item label="产品名">
-                                <el-input v-model="modifyModel.product_name"></el-input>
-                            </el-form-item>
-                            <el-form-item label="是否原创">
-                                <el-select v-model="modifyModel.is_fake" placeholder="请选择">
-                                    <el-option
-                                        v-for="item in boolOption"
-                                        :key="item.value"
-                                        :label="item.label"
-                                        :value="item.value">
-                                    </el-option>
-                                </el-select>
-                            </el-form-item>
-                             <el-form-item label="投放区域">
-                                <el-input v-model="modifyModel.area"></el-input>
-                            </el-form-item>
-                            <el-form-item label="产品图片">
-                                <el-col>
-                                    <el-image :src="product_image" style="width: 80px; height: 80px" fit="contain"></el-image>
-                                </el-col>
-                                <el-col>
-                                    <input type="file" @change="displayImage" ref="imageInput">
-                                </el-col>
-                            </el-form-item>
-                            <el-form-item label="货源地址">
-                                <el-input v-model="modifyModel.product_link"></el-input>
-                            </el-form-item>
-                            <el-form-item label="对标/视频链接">
-                                <el-input v-model="modifyModel.video_link"></el-input>
-                            </el-form-item>
-                            <el-form-item label="创建时间">
-                                <el-input v-model="modifyModel.create_time"></el-input>
-                            </el-form-item>
-                            <el-form-item label="状态">
-                                <el-select v-model="modifyModel.apply_status" placeholder="请选择">
-                                    <el-option
-                                        v-for="item in statusOption"
-                                        :key="item.value"
-                                        :label="item.label"
-                                        :value="item.value">
-                                    </el-option>
-                                </el-select>
-                            </el-form-item>
+                                    <el-form-item label="是否带电池">
+                                        <el-select v-model="modifyModel.has_battery" placeholder="请选择">
+                                            <el-option
+                                                v-for="item in boolOption"
+                                                :key="item.value"
+                                                :label="item.label"
+                                                :value="item.value">
+                                            </el-option>
+                                        </el-select>
+                                    </el-form-item>
+                                    <el-form-item label="是否有侵权风险">
+                                        <el-select v-model="modifyModel.is_infringement" placeholder="请选择">
+                                            <el-option
+                                                v-for="item in boolOption"
+                                                :key="item.value"
+                                                :label="item.label"
+                                                :value="item.value">
+                                            </el-option>
+                                        </el-select>
+                                    </el-form-item>
+                                    <el-form-item label="是否带磁">
+                                        <el-select v-model="modifyModel.has_magnetism" placeholder="请选择">
+                                            <el-option
+                                                v-for="item in boolOption"
+                                                :key="item.value"
+                                                :label="item.label"
+                                                :value="item.value">
+                                            </el-option>
+                                        </el-select>
+                                    </el-form-item>
+                                    <el-form-item label="是否液体">
+                                        <el-select v-model="modifyModel.is_liquid" placeholder="请选择">
+                                            <el-option
+                                                v-for="item in boolOption"
+                                                :key="item.value"
+                                                :label="item.label"
+                                                :value="item.value">
+                                            </el-option>
+                                        </el-select>
+                                    </el-form-item>
+                                    <el-form-item label="是否粉末">
+                                        <el-select v-model="modifyModel.is_powder" placeholder="请选择">
+                                            <el-option
+                                                v-for="item in boolOption"
+                                                :key="item.value"
+                                                :label="item.label"
+                                                :value="item.value">
+                                            </el-option>
+                                        </el-select>
+                                    </el-form-item>
+                                    <el-form-item label="是否需要定制">
+                                        <el-select v-model="modifyModel.need_custom_made" placeholder="请选择">
+                                            <el-option
+                                                v-for="item in boolOption"
+                                                :key="item.value"
+                                                :label="item.label"
+                                                :value="item.value">
+                                            </el-option>
+                                        </el-select>
+                                    </el-form-item>
+                                    <el-form-item label="有无独立包装">
+                                        <el-select v-model="modifyModel.individual_package" placeholder="请选择">
+                                            <el-option
+                                                v-for="item in boolOption"
+                                                :key="item.value"
+                                                :label="item.label"
+                                                :value="item.value">
+                                            </el-option>
+                                        </el-select>
+                                    </el-form-item>
+                                    <el-form-item label="是否有货">
+                                        <el-select v-model="modifyModel.is_in_stock" placeholder="请选择">
+                                            <el-option
+                                                v-for="item in boolOption"
+                                                :key="item.value"
+                                                :label="item.label"
+                                                :value="item.value">
+                                            </el-option>
+                                        </el-select>
+                                    </el-form-item>
+                                    <el-form-item label="插头类型">
+                                        <el-input v-model="modifyModel.plug_type"></el-input>
+                                    </el-form-item>
+                                    <el-form-item label="电压">
+                                        <el-input v-model="modifyModel.voltage"></el-input>
+                                    </el-form-item>
+                                    <el-form-item label="支持语言">
+                                        <el-input v-model="modifyModel.language"></el-input>
+                                    </el-form-item>
+                                    <el-form-item label="运费">
+                                        <el-input v-model="modifyModel.freight"></el-input>
+                                    </el-form-item>
+                                    <el-form-item label="起批量">
+                                        <el-input v-model="modifyModel.start_values"></el-input>
+                                    </el-form-item>
                         </el-form>
+                    </el-col>
                 </el-row>
             </el-col>
             <el-col>
-                <span>规格信息</span>
-                <el-button type="primary" @click="addSKUAction() ">添加规格</el-button>
-                <el-table 
-                    :data="tableData"
-                    border
-                    style="width: 100%">
-                        <el-table-column
-                            prop="specification"
-                            label="产品颜色规格">
-                        </el-table-column>
-                        <el-table-column
-                            label="图片">
-                            <template slot-scope="scope">
-                                <el-image :src="scope.row.image" style="width: 60px; height: 60px" fit="contain">
-                                    <div slot="error" class="image-slot">
-                                        <i class="el-icon-picture-outline"></i>
-                                    </div>
-                                </el-image>
-                            </template>
-                        </el-table-column>
-                        <el-table-column
-                            prop="buy_price"
-                            label="采购价格(元)">
-                        </el-table-column>
-                        <el-table-column
-                            prop="product_size"
-                            label="包装尺寸(cm)">
-                        </el-table-column>
-                        <el-table-column
-                            prop="weight"
-                            label="包装重量(克)">
-                        </el-table-column>
-                        <el-table-column
-                            prop="purchasing_cycle"
-                            label="采购周期">
-                        </el-table-column>
-                        <el-table-column
-                            prop="sensitive_information"
-                            label="敏感信息">
-                        </el-table-column>
-                        <el-table-column
-                            label="操作"
-                            width="100px">
-                            <template slot-scope="scope">
-                                <el-button
-                                    @click.native.prevent="modifySKURoleWithRow(scope.$index, tableData)"
-                                    type="text"
-                                    size="small">
-                                        修改
-                                </el-button>
-                                <el-button
-                                    @click.native.prevent="deleteSKURoleWithRow(scope.$index, tableData)"
-                                    type="text"
-                                    size="small">
-                                        移除
-                                </el-button>
-                            </template>
-                        </el-table-column>
-                    </el-table>
+                <el-row>
+                    <el-col  class="title-cla">
+                        <span>备注</span>
+                    </el-col>
+                    <el-col :span="22">
+                        <el-form  v-model="modifyModel" :inline="true"  class="from-cla">
+                            <el-form-item label=""  style="width:100%">
+                                <el-input type="textarea" v-model="modifyModel.SPU_remark"  style="width:100%;height: 100px;"></el-input>
+                            </el-form-item>
+                        </el-form>
+                    </el-col>
+                </el-row>
             </el-col>
-            <el-col>
-                <span>采购信息</span>
-                <el-form label-width="130px" v-model="modifyModel" :inline="true">
-                            <el-form-item label="是否带电池">
-                                <el-select v-model="modifyModel.has_battery" placeholder="请选择">
-                                    <el-option
-                                        v-for="item in boolOption"
-                                        :key="item.value"
-                                        :label="item.label"
-                                        :value="item.value">
-                                    </el-option>
-                                </el-select>
-                            </el-form-item>
-                            <el-form-item label="是否有侵权风险">
-                                <el-select v-model="modifyModel.is_infringement" placeholder="请选择">
-                                    <el-option
-                                        v-for="item in boolOption"
-                                        :key="item.value"
-                                        :label="item.label"
-                                        :value="item.value">
-                                    </el-option>
-                                </el-select>
-                            </el-form-item>
-                            <el-form-item label="是否带磁">
-                                <el-select v-model="modifyModel.has_magnetism" placeholder="请选择">
-                                    <el-option
-                                        v-for="item in boolOption"
-                                        :key="item.value"
-                                        :label="item.label"
-                                        :value="item.value">
-                                    </el-option>
-                                </el-select>
-                            </el-form-item>
-                            <el-form-item label="是否液体">
-                                <el-select v-model="modifyModel.is_liquid" placeholder="请选择">
-                                    <el-option
-                                        v-for="item in boolOption"
-                                        :key="item.value"
-                                        :label="item.label"
-                                        :value="item.value">
-                                    </el-option>
-                                </el-select>
-                            </el-form-item>
-                            <el-form-item label="是否粉末">
-                                <el-select v-model="modifyModel.is_powder" placeholder="请选择">
-                                    <el-option
-                                        v-for="item in boolOption"
-                                        :key="item.value"
-                                        :label="item.label"
-                                        :value="item.value">
-                                    </el-option>
-                                </el-select>
-                            </el-form-item>
-                            <el-form-item label="是否需要定制">
-                                <el-select v-model="modifyModel.need_custom_made" placeholder="请选择">
-                                    <el-option
-                                        v-for="item in boolOption"
-                                        :key="item.value"
-                                        :label="item.label"
-                                        :value="item.value">
-                                    </el-option>
-                                </el-select>
-                            </el-form-item>
-                            <el-form-item label="有无独立包装">
-                                <el-select v-model="modifyModel.individual_package" placeholder="请选择">
-                                    <el-option
-                                        v-for="item in boolOption"
-                                        :key="item.value"
-                                        :label="item.label"
-                                        :value="item.value">
-                                    </el-option>
-                                </el-select>
-                            </el-form-item>
-                            <el-form-item label="是否有货">
-                                <el-select v-model="modifyModel.is_in_stock" placeholder="请选择">
-                                    <el-option
-                                        v-for="item in boolOption"
-                                        :key="item.value"
-                                        :label="item.label"
-                                        :value="item.value">
-                                    </el-option>
-                                </el-select>
-                            </el-form-item>
-                            <el-form-item label="插头类型">
-                                <el-input v-model="modifyModel.plug_type"></el-input>
-                            </el-form-item>
-                            <el-form-item label="电压">
-                                <el-input v-model="modifyModel.voltage"></el-input>
-                            </el-form-item>
-                            <el-form-item label="支持语言">
-                                <el-input v-model="modifyModel.language"></el-input>
-                            </el-form-item>
-                            <el-form-item label="运费">
-                                <el-input v-model="modifyModel.freight"></el-input>
-                            </el-form-item>
-                            <el-form-item label="起批量">
-                                <el-input v-model="modifyModel.start_values"></el-input>
-                            </el-form-item>
-                </el-form>
-            </el-col>
-            <el-col>
-                <span>备注</span>
-                <el-form label-width="130px" v-model="modifyModel" :inline="true">
-                    <el-form-item label="">
-                        <el-input type="textarea" v-model="modifyModel.SPU_remark"></el-input>
-                    </el-form-item>
-                </el-form>
-            </el-col>
-            <el-col>
+            <el-col class="footer-but">
                 <el-button @click="cancelBtnAction()">取 消</el-button>
                 <el-button type="primary" @click="modifySPUConfirmBtnAction() " >修 改</el-button>
             </el-col>
@@ -544,3 +562,34 @@ export default {
 
 }
 </script>
+
+
+<style scoped>
+.centen-cla{
+    width:100%;
+}
+.title-cla{
+    padding: 10px 0;
+}
+.title-cla>span{
+    font-size: 18px;
+    font-weight:bold;
+
+}
+.footer-but{
+    text-align: center
+}
+.layout-cla {
+    border-bottom: 1px solid #ece8e8;
+    padding-top: 10px;
+}
+</style>
+
+<style>
+.el-input__inner{
+    width: 185px;
+}
+.from-cla .el-form-item__content{
+    width: 100%
+}
+</style>

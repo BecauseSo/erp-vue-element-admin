@@ -12,7 +12,9 @@
                         label="产品图片"
                         width="150px">
                         <template slot-scope="scope">
-                            <el-image :src="scope.row.product_image" style="width: 120px; height: 120px" fit="contain"></el-image>
+                            <el-image :src="scope.row.product_image" @click="img_show(scope.row.product_image)" style="width: 120px; height: 120px" fit="contain"></el-image>
+                        <!-- <el-image src="http://39.99.140.176:8112/spu/product/image/1573032745312.png"  @click="img_show('http://39.99.140.176:8112/spu/product/image/1573032745312.png')" style="width: 120px; height: 120px" fit="contain" ></el-image> -->
+
                         </template>
                     </el-table-column>
                     <el-table-column
@@ -29,7 +31,7 @@
                     </el-table-column>
                     <el-table-column
                         label="规格"
-                        width="220px">
+                        width="165px">
                         <template slot-scope="scope">
                             <p v-for="sku_item in scope.row.sku_list">
                                 {{sku_item.specification}}-{{sku_item.product_size}}cm
@@ -37,6 +39,7 @@
                         </template>
                     </el-table-column>
                     <el-table-column
+                        width="90px"
                         label="采购价(元)">
                         <template slot-scope="scope">
                             <p v-for="sku_item in scope.row.sku_list">
@@ -53,6 +56,7 @@
                         </template>
                     </el-table-column> -->
                     <el-table-column
+                        width="130px"
                         label="含包装的重量(克)">
                         <template slot-scope="scope">
                             <p v-for="sku_item in scope.row.sku_list">
@@ -81,6 +85,7 @@
                         label="起批量">
                     </el-table-column>
                     <el-table-column
+                        width="200px"
                         label="货源地址">
                         <template slot-scope="scope">
                             <a :href="scope.row.product_link">{{scope.row.product_link}}</a>
@@ -108,6 +113,19 @@
                     </el-table-column>
                 </el-table>
             </el-container>
+
+            <!-- 弹框 -->
+            <el-dialog
+            title="查看产品图片"
+            :visible.sync="dialogVisible"
+            width="60%">
+            <el-image :src="img_src" fit="contain" ></el-image>
+            <span slot="footer" class="dialog-footer">
+                <el-button type="primary" @click="open_imgs" >新窗口查看图片</el-button>
+            </span>
+            </el-dialog>
+            <!-- 弹框end -->
+
         </el-main>
     </el-container>
 </template>
@@ -120,6 +138,8 @@
 export default {
     data(){
         return {
+            dialogVisible: false,
+            img_src:null,
             loading:false,
             tableData:[],
             boolOption:[
@@ -243,6 +263,15 @@ export default {
         //                 _this.$message({type:'error',message:"修改申请失败"});
         //             });
         // }
+        img_show(imgsrc){ //弹窗中打开图片
+
+            this.dialogVisible = true;
+            
+            this.img_src = imgsrc;
+        },
+        open_imgs(){ //新窗口打开图片
+            window.open(this.img_src, '_blank', 'toolbar=yes, width=900, height=700')
+        }
     }
 
 }

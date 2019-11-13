@@ -12,7 +12,7 @@
                         label="产品图片"
                         width="150px">
                         <template slot-scope="scope">
-                            <el-image :src="scope.row.product_image" style="width: 120px; height: 120px" fit="contain"></el-image>
+                            <el-image :src="scope.row.product_image"  @click="img_show(scope.row.product_image)"  style="width: 120px; height: 120px" fit="contain"></el-image>
                         </template>
                     </el-table-column>
                     <el-table-column
@@ -29,7 +29,7 @@
                     </el-table-column>
                     <el-table-column
                         label="规格"
-                        width="220px">
+                        width="155px">
                         <template slot-scope="scope">
                             <p v-for="sku_item in scope.row.sku_list">
                                 {{sku_item.specification}}-{{sku_item.product_size}}cm
@@ -37,6 +37,7 @@
                         </template>
                     </el-table-column>
                     <el-table-column
+                        width="100px"
                         label="采购价(元)">
                         <template slot-scope="scope">
                             <p v-for="sku_item in scope.row.sku_list">
@@ -53,6 +54,7 @@
                         </template>
                     </el-table-column> -->
                     <el-table-column
+                        width="135px"
                         label="含包装的重量(克)">
                         <template slot-scope="scope">
                             <p v-for="sku_item in scope.row.sku_list">
@@ -81,6 +83,7 @@
                         label="起批量">
                     </el-table-column>
                     <el-table-column
+                        width="180px"
                         label="货源地址">
                         <template slot-scope="scope">
                             <a :href="scope.row.product_link">{{scope.row.product_link}}</a>
@@ -108,6 +111,19 @@
                     </el-table-column>
                 </el-table>
             </el-container>
+
+            <!-- 弹框 -->
+            <el-dialog
+            title="查看产品图片"
+            :visible.sync="dialogVisible"
+            width="60%">
+            <el-image :src="img_src" fit="contain" ></el-image>
+            <span slot="footer" class="dialog-footer">
+                <el-button type="primary" @click="open_imgs" >新窗口查看图片</el-button>
+            </span>
+            </el-dialog>
+            <!-- 弹框end -->
+
         </el-main>
     </el-container>
 </template>
@@ -119,6 +135,8 @@ import ManagerSPUModify from '@/components/ManagerSPUModify.vue'
 export default {
     data(){
         return {
+            dialogVisible: false,
+            img_src:null,
             loading:false,
             tableData:[],
             boolOption:[
@@ -169,6 +187,17 @@ export default {
 
                     });
         },
+        img_show(imgsrc){ //弹窗中打开图片
+
+            console.log(imgsrc);
+
+            this.dialogVisible = true;
+            
+            this.img_src = imgsrc;
+        },
+        open_imgs(){ //新窗口打开图片
+            window.open(this.img_src, '_blank', 'toolbar=yes, width=900, height=700')
+        }
     }
 
 }
