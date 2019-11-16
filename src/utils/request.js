@@ -5,7 +5,7 @@ import { getToken,getUserInfo } from '@/utils/auth'
 
 // create an axios instance
 const service = axios.create({
-  baseURL: 'http://39.99.140.176:8112', // url = base url + request url
+  baseURL: 'http://127.0.0.1:8112', // url = base url + request url
   // withCredentials: true, // send cookies when cross-domain requests
   timeout: 5000 // request timeout
 })
@@ -51,6 +51,7 @@ service.interceptors.response.use(
    */
   response => {
     const res = response.data
+    console.log('状态：' + response.status)
     // if the custom code is not 20000, it is judged as an error.
     if (response.status !== 200) {
       Message({
@@ -78,12 +79,20 @@ service.interceptors.response.use(
     }
   },
   error => {
-    console.log('err' + error) // for debug
-    Message({
-      message: error.message,
-      type: 'error',
-      duration: 5 * 1000
-    })
+    if (error.response.status === 405) {
+      console.log(error.response)
+      Message({
+        message: error.response.data.message,
+        type: 'error',
+        duration: 5 * 1000
+      })
+    } else {
+      Message({
+        message: error.message,
+        type: 'error',
+        duration: 5 * 1000
+      })
+    }
     return Promise.reject(error)
   }
 )
